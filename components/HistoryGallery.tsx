@@ -1,13 +1,29 @@
+
 import React, { useState } from 'react';
+import { PromptData, CameraSettings } from '../services/geminiService';
+import { PersonaType, PersonaIntensity } from './PersonaSelector';
 
 export interface HistoryItem {
   id: string;
   thumbnailUrl: string;
-  prompts: {
-      regular: string;
-      html: string;
-  };
-  aspectRatio: string;
+  promptData: PromptData;
+  aspectRatio: string | null;
+  cameraAngle?: string | null;
+  lighting?: string | null;
+  visualStyle?: string | null;
+  colorPalette?: string | null;
+  colorTemperature?: number;
+  texture?: string | null;
+  animationStyle?: string | null;
+  persona?: PersonaType | null; 
+  personaIntensity?: PersonaIntensity;
+  detailWeight?: number;
+  realismBalance?: number;
+  isCharacterBuilder?: boolean;
+  cameraSettings?: CameraSettings;
+  sourceType?: string | null;
+  themeMode?: 'light' | 'dark' | null;
+  subjectGender?: 'male' | 'female' | 'non-binary' | null;
   timestamp: number;
 }
 
@@ -55,10 +71,27 @@ const HistoryGallery: React.FC<HistoryGalleryProps> = ({ history, onSelect, onDe
                     />
                 </div>
                 <div className="ml-3 flex flex-col justify-center">
-                    <div className="flex items-center gap-2">
-                         <span className="text-[10px] font-bold text-brand-primary bg-brand-primary/10 px-1.5 py-0.5 rounded border border-brand-primary/20">
-                            {item.aspectRatio}
-                        </span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        {item.aspectRatio && (
+                            <span className="text-[9px] font-bold text-brand-primary bg-brand-primary/10 px-1.5 py-0.5 rounded border border-brand-primary/20">
+                                {item.aspectRatio}
+                            </span>
+                        )}
+                        {item.sourceType && (
+                            <span className="text-[9px] font-bold text-gray-300 bg-gray-700/50 px-1.5 py-0.5 rounded border border-gray-600">
+                                {item.sourceType}
+                            </span>
+                        )}
+                        {item.persona && (
+                             <span className="text-[9px] font-bold text-pink-400 bg-pink-400/10 px-1.5 py-0.5 rounded border border-pink-400/20 capitalize">
+                                {item.persona}
+                             </span>
+                        )}
+                        {item.promptData.isUniversal && (
+                             <span className="text-[9px] font-bold text-white bg-gray-700 px-1.5 py-0.5 rounded border border-gray-600">
+                                Univ.
+                             </span>
+                        )}
                     </div>
                     <span className="text-[10px] text-gray-500 mt-1">
                         {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -66,17 +99,17 @@ const HistoryGallery: React.FC<HistoryGalleryProps> = ({ history, onSelect, onDe
                 </div>
             </div>
             
-            {/* Body: Prompt Snippet (Regular version preview) */}
+            {/* Body: Prompt Snippet */}
             <div className="p-3 flex-grow bg-brand-surface/50">
                 <p className="text-xs text-gray-300 line-clamp-4 leading-relaxed font-mono opacity-90">
-                    {item.prompts.regular}
+                    {item.promptData.regular}
                 </p>
             </div>
 
             {/* Actions overlay */}
             <div className="absolute top-2 right-2 flex space-x-2">
                 <button
-                    onClick={(e) => handleCopy(e, item.prompts.regular, item.id)}
+                    onClick={(e) => handleCopy(e, item.promptData.regular, item.id)}
                     className="p-1.5 bg-black/60 backdrop-blur-sm hover:bg-brand-primary/90 rounded-full text-white opacity-0 group-hover:opacity-100 transition-all duration-200"
                     title="Copy prompt"
                 >

@@ -1,5 +1,5 @@
 {
-  "name": "Image to Prompt Generator - Experimental app",
+  "name": "Image to Prompt Generator",
   "description": "Upload an image and let Gemini generate a detailed, versatile prompt for AI image generation models. Get the perfect description to recreate or modify your image's style, composition, and mood.",
   "requestFramePermissions": []
 }
