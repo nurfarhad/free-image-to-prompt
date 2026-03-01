@@ -321,7 +321,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ imageFile, onImageSelect,
                     src={previewUrl} 
                     alt="Uploaded preview" 
                     className="absolute inset-0 w-full h-full object-contain pointer-events-none p-2" 
-                    crossOrigin="anonymous" 
                 />
                 
                 {/* ROI Selection Overlay */}

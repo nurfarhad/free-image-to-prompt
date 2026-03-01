@@ -200,7 +200,7 @@ const StyleTransfer: React.FC = () => {
                                     className="overflow-hidden"
                                 >
                                     <div className="h-40 pt-2">
-                                         <ImageUploader imageFile={bgFile} onImageSelect={setBgFile} onEffectiveImageChange={setBgBase64} heightClass="h-full" />
+                                         <ImageUploader imageFile={bgFile} onImageSelect={setBgFile} onEffectiveImageChange={setBgBase64} heightClass="h-40" />
                                     </div>
                                 </motion.div>
                             )}

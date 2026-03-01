@@ -54,13 +54,13 @@ const AdditionalContext: React.FC<AdditionalContextProps> = ({
   };
 
   return (
-    <div className="bg-brand-surface rounded-xl border border-gray-800 p-4 space-y-4">
+    <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-4 space-y-4">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center space-x-2">
-          <div className="h-2 w-2 rounded-full bg-gray-500 shadow-[0_0_5px_rgba(107,114,128,0.5)]"></div>
-          <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wide">Additional Context</h3>
+          <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+          <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Additional Context</h3>
         </div>
-        <span className="text-[10px] text-gray-500 font-medium px-2 py-0.5 rounded-full bg-gray-800 border border-gray-700 uppercase tracking-tighter">Optional</span>
+        <span className="text-[10px] text-zinc-500 font-bold px-2 py-0.5 rounded-full bg-zinc-950 border border-white/5 uppercase tracking-tighter">Optional</span>
       </div>
 
       <SourceTypeSelector 

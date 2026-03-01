@@ -415,12 +415,12 @@ const App: React.FC = () => {
                                             exit={{ height: 0, opacity: 0 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="h-32 pt-1">
+                                            <div className="h-40 pt-1">
                                                 <ImageUploader 
                                                     imageFile={bgFile} 
                                                     onImageSelect={setBgFile} 
                                                     onEffectiveImageChange={setBgBase64}
-                                                    heightClass="h-full"
+                                                    heightClass="h-40"
                                                 />
                                             </div>
                                         </motion.div>
@@ -497,7 +497,7 @@ const App: React.FC = () => {
                                 )}
                             </AnimatePresence>
                             
-                            <div className="flex-grow w-full flex flex-col max-w-5xl mx-auto">
+                            <div className="flex-grow w-full flex flex-col">
                                 <PromptDisplay 
                                     promptData={generatedPromptData} 
                                     isLoading={isLoadingPrompt} 

@@ -428,7 +428,7 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
 
   return (
     <div className="flex flex-col h-full gap-6 relative">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-zinc-900/40 backdrop-blur-md rounded-2xl p-2 border border-white/5 shrink-0">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-zinc-900/40 backdrop-blur-md rounded-2xl p-2 border border-white/5 shrink-0 z-30">
             <nav className="flex items-center p-1 bg-zinc-950 rounded-xl border border-white/5 overflow-x-auto max-w-full custom-scrollbar">
                 {TABS.map(tab => (
                     <button 
@@ -465,7 +465,7 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
                                             initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                             animate={{ opacity: 1, scale: 1, y: 0 }}
                                             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                            className="absolute right-0 top-full mt-2 w-56 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-50 p-2 flex flex-col gap-1"
+                                            className="absolute right-0 top-full mt-2 w-56 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-[60] p-2 flex flex-col gap-1"
                                         >
                                             <button onClick={handleDebloat} className="text-[10px] font-bold uppercase tracking-widest text-left px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">De-bloat Text</button>
                                             <button onClick={handleCompress} className="text-[10px] font-bold uppercase tracking-widest text-left px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">Compress Keywords</button>

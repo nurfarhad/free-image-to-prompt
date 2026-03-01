@@ -83,7 +83,7 @@ const PersonaSelector: React.FC<PersonaSelectorProps> = ({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="flex flex-wrap gap-2">
         {personas.map((persona) => {
           const isSelected = selectedPersonas.includes(persona.id);
           return (
@@ -92,7 +92,7 @@ const PersonaSelector: React.FC<PersonaSelectorProps> = ({
                 onClick={() => onTogglePersona(persona.id)}
                 disabled={disabled}
                 className={`
-                  w-full flex items-center p-2 rounded-lg border transition-all duration-200 text-left
+                  flex items-center p-2 rounded-lg border transition-all duration-200 text-left min-w-[120px] flex-1 sm:flex-none
                   ${isSelected
                     ? 'bg-gradient-to-r from-brand-secondary/20 to-purple-900/20 border-brand-secondary text-brand-secondary ring-1 ring-brand-secondary/50' 
                     : 'bg-brand-gray border-gray-700 text-gray-400 hover:bg-gray-700 hover:border-gray-500 hover:text-gray-200'
@@ -100,10 +100,10 @@ const PersonaSelector: React.FC<PersonaSelectorProps> = ({
                   ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
               >
-                <div className={`mr-2 p-1.5 rounded-full ${isSelected ? 'bg-brand-secondary text-white' : 'bg-gray-800 text-gray-500'}`}>
+                <div className={`mr-2 p-1.5 rounded-full shrink-0 ${isSelected ? 'bg-brand-secondary text-white' : 'bg-gray-800 text-gray-500'}`}>
                   {persona.icon}
                 </div>
-                <span className="text-xs font-semibold">{persona.label}</span>
+                <span className="text-xs font-semibold whitespace-nowrap">{persona.label}</span>
               </button>
             </Tooltip>
           );
