@@ -19,15 +19,19 @@ import {
   ShieldAlert, 
   BarChart3, 
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Maximize2,
   Minimize2,
   Trash2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Sun
 } from 'lucide-react';
 import { refinePromptWithGemini, compressPrompt, predictModelOutcome, ImagePart, PromptData, ModelPreset, generateImage, gradePrompt, editImage, resizeBase64, base64ToImagePart } from '../services/geminiService';
 import Tooltip from './Tooltip';
 import ViewpointSelector from './ViewpointSelector';
 import GazeSelector from './GazeSelector';
+import RelightSelector, { RelightSettings } from './RelightSelector';
 import DecompositionView from './DecompositionView';
 import VoiceInput from './VoiceInput';
 import GeneratedImage from './GeneratedImage';
@@ -84,6 +88,10 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
   
   const [refineImageFile, setRefineImageFile] = useState<File | null>(null);
   const [refineImageDataUrl, setRefineImageDataUrl] = useState<string | null>(null);
+
+  const [isRelightCollapsed, setIsRelightCollapsed] = useState(false);
+  const [isViewpointCollapsed, setIsViewpointCollapsed] = useState(false);
+  const [isGazeCollapsed, setIsGazeCollapsed] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -353,6 +361,24 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
           }
       }
   };
+
+  const handleRelightChange = async (settings: RelightSettings) => {
+      const lightDesc = `${settings.type} ${settings.direction} lighting with ${settings.brightness}% brightness and ${settings.color} color tint`;
+      executeRefinement(`Update lighting to: ${lightDesc}.`);
+      
+      if (originalImageUrl) {
+          setIsGeneratingImage(true);
+          try {
+              const instruction = `Change the lighting to ${lightDesc}. Maintain the subject, environment, and style exactly as they are in the input image. Only adjust the light source direction, intensity, and color.`;
+              const newImageUrl = await editImage(originalImageUrl, instruction);
+              setGeneratedImageUrl(newImageUrl);
+          } catch (e) {
+              console.error("Failed to relight image", e);
+          } finally {
+              setIsGeneratingImage(false);
+          }
+      }
+  };
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleRefineSubmit(e); } };
   
@@ -517,8 +543,8 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
             </div>
       </header>
       
-      <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-[500px]">
-        <div className="flex-1 flex flex-col glass-panel overflow-hidden relative">
+      <div className="flex-1 flex flex-col lg:flex-row gap-6">
+        <div className="flex-1 flex flex-col glass-panel overflow-hidden relative min-h-[600px]">
             {viewMode === 'regular' && promptData && (
                 <div className="absolute top-4 right-6 z-10 px-3 py-1.5 bg-zinc-950/80 backdrop-blur-md rounded-full border border-white/5 text-[10px] text-zinc-500 font-bold uppercase tracking-widest pointer-events-none">
                     {getTokenCount()} Tokens
@@ -828,8 +854,8 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
             )}
         </div>
 
-        <aside className="w-full lg:w-[400px] xl:w-[450px] flex flex-col gap-6">
-            <div className="flex-1 glass-panel overflow-hidden flex flex-col shadow-2xl">
+        <aside className="w-full lg:w-[400px] xl:w-[450px] flex flex-col gap-6 lg:sticky lg:top-0 h-fit">
+            <div className="glass-panel overflow-hidden flex flex-col shadow-2xl shrink-0">
                 <div className="p-4 border-b border-white/5 bg-zinc-950/50 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <ImageIcon className="w-4 h-4 text-zinc-500" />
@@ -849,12 +875,85 @@ const PromptDisplay: React.FC<PromptDisplayProps> = ({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4" style={{ opacity: isLoading || isRefining || isGeneratingImage ? 0.5 : 1, pointerEvents: isLoading || isRefining || isGeneratingImage ? 'none' : 'auto' }}>
-                <div className="glass-panel p-4 flex flex-col items-center shadow-xl">
-                    <ViewpointSelector onSelect={handleViewpointChange} disabled={isLoading || isRefining || isGeneratingImage} />
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3 px-1">
+                    <div className="flex-1 h-px bg-white/5" />
+                    <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Controllers</span>
+                    <div className="flex-1 h-px bg-white/5" />
                 </div>
-                <div className="glass-panel p-4 flex flex-col items-center shadow-xl">
-                    <GazeSelector onSelect={handleGazeChange} disabled={isLoading || isRefining || isGeneratingImage} />
+
+                {/* Relight Controller */}
+                <div className="glass-panel overflow-hidden flex flex-col shadow-xl">
+                    <button 
+                        onClick={() => setIsRelightCollapsed(!isRelightCollapsed)}
+                        className="w-full p-3 flex items-center justify-between bg-zinc-950/50 hover:bg-zinc-950 transition-colors"
+                    >
+                        <div className="flex items-center gap-2">
+                            <Sun className="w-3.5 h-3.5 text-zinc-500" />
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Relight Engine</span>
+                        </div>
+                        {isRelightCollapsed ? <ChevronDown className="w-3.5 h-3.5 text-zinc-600" /> : <ChevronUp className="w-3.5 h-3.5 text-zinc-600" />}
+                    </button>
+                    <AnimatePresence initial={false}>
+                        {!isRelightCollapsed && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                            >
+                                <RelightSelector onSelect={handleRelightChange} disabled={isLoading || isRefining || isGeneratingImage} />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 shrink-0" style={{ opacity: isLoading || isRefining || isGeneratingImage ? 0.5 : 1, pointerEvents: isLoading || isRefining || isGeneratingImage ? 'none' : 'auto' }}>
+                    {/* Viewpoint Controller */}
+                    <div className="glass-panel overflow-hidden flex flex-col shadow-xl">
+                        <button 
+                            onClick={() => setIsViewpointCollapsed(!isViewpointCollapsed)}
+                            className="w-full p-3 flex items-center justify-between bg-zinc-950/50 hover:bg-zinc-950 transition-colors"
+                        >
+                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">3D View</span>
+                            {isViewpointCollapsed ? <ChevronDown className="w-3 h-3 text-zinc-600" /> : <ChevronUp className="w-3 h-3 text-zinc-600" />}
+                        </button>
+                        <AnimatePresence initial={false}>
+                            {!isViewpointCollapsed && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden p-4 flex flex-col items-center"
+                                >
+                                    <ViewpointSelector onSelect={handleViewpointChange} disabled={isLoading || isRefining || isGeneratingImage} />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Gaze Controller */}
+                    <div className="glass-panel overflow-hidden flex flex-col shadow-xl">
+                        <button 
+                            onClick={() => setIsGazeCollapsed(!isGazeCollapsed)}
+                            className="w-full p-3 flex items-center justify-between bg-zinc-950/50 hover:bg-zinc-950 transition-colors"
+                        >
+                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Eye Gaze</span>
+                            {isGazeCollapsed ? <ChevronDown className="w-3 h-3 text-zinc-600" /> : <ChevronUp className="w-3 h-3 text-zinc-600" />}
+                        </button>
+                        <AnimatePresence initial={false}>
+                            {!isGazeCollapsed && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden p-4 flex flex-col items-center"
+                                >
+                                    <GazeSelector onSelect={handleGazeChange} disabled={isLoading || isRefining || isGeneratingImage} />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
         </aside>

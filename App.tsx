@@ -479,45 +479,47 @@ const App: React.FC = () => {
                     </aside>
 
                     {/* Right Panel: Output & History */}
-                    <div className="flex-1 flex flex-col bg-[#09090b] h-full overflow-hidden">
-                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-8 relative flex flex-col">
-                            <AnimatePresence>
-                                {error && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: -20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm flex items-center gap-3 shadow-xl shadow-red-500/5"
-                                    >
-                                        <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-                                        </div>
-                                        {error}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                            
-                            <div className="flex-grow w-full flex flex-col">
-                                <PromptDisplay 
-                                    promptData={generatedPromptData} 
-                                    isLoading={isLoadingPrompt} 
-                                    onPromptChange={handlePromptUpdate}
-                                    currentVersionIndex={currentHistoryIndex}
-                                    totalVersions={promptHistory.length}
-                                    onUndo={handleUndo}
-                                    onRedo={handleRedo}
-                                    targetModel={modelPreset}
-                                    aspectRatio={aspectRatio}
-                                />
-
-                                <div className="mt-16 space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <HistoryIcon className="w-5 h-5 text-zinc-500" />
-                                        <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Generation History</h3>
-                                        <div className="flex-1 h-px bg-white/5" />
-                                    </div>
-                                    <HistoryGallery history={history} onSelect={handleSelectHistory} onDelete={handleDeleteHistory} />
+                    <div className="flex-1 flex flex-col bg-[#09090b] h-full overflow-y-auto custom-scrollbar">
+                        <div className="relative flex flex-col">
+                            <div className="p-6 lg:p-8 flex flex-col h-[calc(100vh-theme(spacing.4))] min-h-[800px]">
+                                <AnimatePresence>
+                                    {error && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: -20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm flex items-center gap-3 shadow-xl shadow-red-500/5"
+                                        >
+                                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                                            </div>
+                                            {error}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                                
+                                <div className="flex-grow w-full flex flex-col">
+                                    <PromptDisplay 
+                                        promptData={generatedPromptData} 
+                                        isLoading={isLoadingPrompt} 
+                                        onPromptChange={handlePromptUpdate}
+                                        currentVersionIndex={currentHistoryIndex}
+                                        totalVersions={promptHistory.length}
+                                        onUndo={handleUndo}
+                                        onRedo={handleRedo}
+                                        targetModel={modelPreset}
+                                        aspectRatio={aspectRatio}
+                                    />
                                 </div>
+                            </div>
+
+                            <div className="p-6 lg:p-8 space-y-6">
+                                <div className="flex items-center gap-3">
+                                    <HistoryIcon className="w-5 h-5 text-zinc-500" />
+                                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Generation History</h3>
+                                    <div className="flex-1 h-px bg-white/5" />
+                                </div>
+                                <HistoryGallery history={history} onSelect={handleSelectHistory} onDelete={handleDeleteHistory} />
                                 
                                 {/* Social Footer */}
                                 <footer className="mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 opacity-40 hover:opacity-100 transition-opacity duration-500 pb-8">
