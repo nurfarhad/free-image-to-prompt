@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Path Variable Hardening helper
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Validation Blueprints
+    function isValidHistoryItem(data) {
+      return data.keys().hasAll(['userId', 'thumbnailUrl', 'promptData', 'timestamp'])
+        && data.userId == request.auth.uid
+        && data.thumbnailUrl is string && data.thumbnailUrl.size() <= 2048
+        && data.timestamp is number
+        && data.promptData is map
+        && data.promptData.regular is string && data.promptData.regular.size() <= 10000
+        // Optional fields checks could be added here
+        && (!data.keys().contains('aspectRatio') || (data.aspectRatio is string || data.aspectRatio == null))
+        && (!data.keys().contains('cameraAngle') || (data.cameraAngle is string || data.cameraAngle == null))
+        && (!data.keys().contains('lighting') || (data.lighting is string || data.lighting == null))
+        && (!data.keys().contains('visualStyle') || (data.visualStyle is string || data.visualStyle == null))
+        && (!data.keys().contains('colorPalette') || (data.colorPalette is string || data.colorPalette == null))
+        && (!data.keys().contains('colorTemperature') || data.colorTemperature is number)
+        && (!data.keys().contains('texture') || (data.texture is string || data.texture == null))
+        && (!data.keys().contains('animationStyle') || (data.animationStyle is string || data.animationStyle == null))
+        && (!data.keys().contains('persona') || (data.persona is string || data.persona == null))
+        && (!data.keys().contains('personaIntensity') || data.personaIntensity is string)
+        && (!data.keys().contains('detailWeight') || data.detailWeight is number)
+        && (!data.keys().contains('realismBalance') || data.realismBalance is number)
+        && (!data.keys().contains('isCharacterBuilder') || data.isCharacterBuilder is bool)
+        && (!data.keys().contains('cameraSettings') || data.cameraSettings is map)
+        && (!data.keys().contains('sourceType') || (data.sourceType is string || data.sourceType == null))
+        && (!data.keys().contains('themeMode') || (data.themeMode is string || data.themeMode == null))
+        && (!data.keys().contains('subjectGender') || (data.subjectGender is string || data.subjectGender == null))
+        && (!data.keys().contains('mode') || (data.mode is string || data.mode == null));
+    }
+
+    // 1. The Master Gate
+    match /history/{historyId} {
+      // 8. Secure List Queries
+      allow list: if isSignedIn();
+      
+      allow get: if isOwner(resource.data.userId) && isValidId(historyId);
+      
+      allow create: if isSignedIn() 
+        && isValidId(historyId) 
+        && isValidHistoryItem(incoming())
+        && incoming().timestamp <= request.time.toMillis() + (60 * 1000);
+        
+      allow update: if isSignedIn() && isOwner(existing().userId)
+        && isValidId(historyId)
+        && isValidHistoryItem(incoming())
+        && incoming().userId == existing().userId
+        && incoming().timestamp == existing().timestamp;
+        
+      allow delete: if isSignedIn() && isOwner(existing().userId) && isValidId(historyId);
+    }
+    
+    // Internal test connection document
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

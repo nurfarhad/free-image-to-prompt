@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "HistoryItem": {
+      "title": "History Item",
+      "description": "A saved generation prompt with its settings and result thumbnail.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The UID of the user who owns this history item." },
+        "thumbnailUrl": { "type": "string", "description": "The URL of the generated or uploaded image." },
+        "promptData": { "type": "object", "description": "The full prompt data object." },
+        "aspectRatio": { "type": "string" },
+        "cameraAngle": { "type": "string" },
+        "lighting": { "type": "string" },
+        "visualStyle": { "type": "string" },
+        "colorPalette": { "type": "string" },
+        "colorTemperature": { "type": "number" },
+        "texture": { "type": "string" },
+        "animationStyle": { "type": "string" },
+        "persona": { "type": "string" },
+        "personaIntensity": { "type": "string" },
+        "detailWeight": { "type": "number" },
+        "realismBalance": { "type": "number" },
+        "isCharacterBuilder": { "type": "boolean" },
+        "cameraSettings": { "type": "object" },
+        "sourceType": { "type": "string" },
+        "themeMode": { "type": "string" },
+        "subjectGender": { "type": "string" },
+        "timestamp": { "type": "number", "description": "Creation timestamp." }
+      },
+      "required": ["userId", "thumbnailUrl", "promptData", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/history/{historyId}": {
+      "schema": "HistoryItem",
+      "description": "A collection of prompt generation history."
+    }
+  }
+}
